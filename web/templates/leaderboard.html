@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="page-title">Leaderboard</h1>
+    <div id="leaderboard">
+        <table>
+            <tr>
+                <th>Racer</th>
+                <th>Tid opnået i lap</th>
+                <th>Tre bedste Tider</th>
+            </tr>
+            {% for racer in racers %}
+                <tr>
+                    <td>{{ racer.name }}</td>
+                    <td>
+                        {% for lap, time in racer.lap_times %}
+                            {{ lap }}: {{ time }}<br>
+                        {% endfor %}
+                        {% for i in range(racer.lap_times|length, show_times) %}
+                            Ingen tid<br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>    
+    </div>
+    <div class="back-container">
+        <a onclick="go_to_page('index')" href="javascript:void(0);" class="go-back">Gå tilbage til setup</a>
+    </div>
+{% endblock %}

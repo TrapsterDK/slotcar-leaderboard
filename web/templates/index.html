@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="page-title">Opsætning af leaderboard</h1>
+    <input type="text" value="{{database_default}}" id="database" onclick="eel.file_select()().then((r) => {this.value = r})" placeholder="Vælg eksisterende database" readonly>
+    <input type="number" id="number" min="0" class="input-positive-integer" placeholder="Indtast antal racere">  
+    <input type="number" id="max_lap_time" min="0" class="input-positive-integer" placeholder="Maks lap tid før reset i sekunder">
+    <button id="start" onclick="eel.load_database(database.value); eel.setup_leaderboard(number.value, max_lap_time.value)">Start</button>
+{% endblock %}
