@@ -95,14 +95,13 @@ class Database:
             raise ValueError("User does not exist")
 
         # select times from user sorted by time
-        self.c.execute("SELECT times.lap, times.time FROM times INNER JOIN times_many ON times.id = times_many.time_id WHERE times_many.user_id = ? ORDER BY times.time LIMIT ?", (user_id, limit_times))
+        self.c.execute("SELECT times.lap, times.time FROM times INNER JOIN times_many ON times.id = times_many.time_id WHERE times_many.user_id = ? ORDER BY times.time DESC LIMIT ?", (user_id, limit_times))
 
         return User(user_id, name, self.c.fetchall())
 
     def get_users_sorted_by_top_time(self, limit_times: int = 3) -> list[User]:
-        # select all users sorted by top time (first time), and any without a time last
-        self.c.execute("SELECT users.id FROM users LEFT JOIN times_many ON users.id = times_many.user_id LEFT JOIN times ON times.id = times_many.time_id GROUP BY users.id ORDER BY times.time DESC NULLS LAST") 
-
+        self.c.execute("SELECT users.id FROM users INNER JOIN times_many ON users.id = times_many.user_id INNER JOIN times ON times_many.time_id = times.id GROUP BY users.id ORDER BY max(times.time) DESC")
+        
         return [self.get_user(user_id, limit_times) for user_id, in self.c.fetchall()]
 
     def get_last_user(self) -> User:
@@ -120,6 +119,16 @@ class Database:
     def get_users(self) -> list[User]:
         self.c.execute("SELECT id FROM users")
         return [self.get_user(user_id[0]) for user_id in self.c.fetchall()]
+
+    def create_fake_data(self, amount: int = 20) -> None:
+        import random
+
+        for i in range(amount):
+            user_id = self.add_user(f"User {i}")
+            self.add_times(user_id, [(random.randint(1, 5), random.randint(1, 10000)) for _ in range(random.randint(0, 5))])
+
+        self.con.commit()
+        
     
 
 if __name__ == "__main__":

@@ -25,3 +25,50 @@
     bottom: 0;
     right: 0;
 }
+
+
+.racer {
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.racer-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.racer-position {
+    width: 100px;
+    text-align: center;
+    font-size: 4em;
+    font-weight: bold;
+    border-right: #000 solid 2px;
+}
+
+.racer-times {
+    display: flex;
+    flex-direction: row;
+}
+
+.racer-times > li {
+    display: inline-block;
+    border-color: #000;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.racer-times > li > p {
+    display: inline-block;
+}
+
+#leaderboard {
+    display: grid;
+    padding: 10px;
+    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+}

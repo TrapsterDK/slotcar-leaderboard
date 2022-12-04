@@ -26,6 +26,7 @@ def file_select(defaultextension=".db", filetypes=[("Database", "*.db")]):
     if file:
         return file.name
     return ""
+    
 
 def create_users(amount: int) -> None:
     if not amount:
@@ -39,8 +40,7 @@ def print_text(text):
     print(text)
 
 
-@eel.expose
-def load_database(filename: str) -> None:
+def load_database(filename: str = None) -> None:
     global db
     
     # check if filename was given
@@ -55,13 +55,14 @@ def load_database(filename: str) -> None:
     try:
         db = Database(filename)
     except Exception as e:
-        return
+        raise e
 
 
 @eel.expose
-def setup_leaderboard(racers: int, max_lap_time_s: int):
-    if not db:
-        load_database("")
+def setup_leaderboard(database_filename: str, racers: int, max_lap_time_s: int):
+    load_database(database_filename)
+
+    db.create_fake_data()
 
     try:
         racers = int(racers) if racers else 0
@@ -72,33 +73,8 @@ def setup_leaderboard(racers: int, max_lap_time_s: int):
 
     create_users(racers)
 
-    leaderboard()
-
-
-@eel.expose
-def go_to_page(page: str):
-    if page == "leaderboard":
-        leaderboard()
-    elif page == "index":
-        index()
-    else:
-        raise ValueError("Invalid page")
-
-def index():
-    if db:
-        database_default = db.filename
-    else:
-        database_default = ""
-
-    eel.go_to_jinja_page(eel.btl.jinja2_template("index.html", database_default=database_default))
-
-def leaderboard():
-    racers = db.get_users_sorted_by_top_time(SHOW_TIMES)
-    
-    eel.go_to_jinja_page(eel.btl.jinja2_template("web/templates/leaderboard.html", racers=racers, show_times=SHOW_TIMES))
-
-def race(racer: User):
-    eel.go_to_jinja_page(eel.btl.jinja2_template("web/templates/race.html", racer=racer))
+def get_current_racer() -> User:
+    return db.get_user(last_user_id)
 
 
 if __name__ == "__main__":
@@ -106,9 +82,14 @@ if __name__ == "__main__":
         eel.init(web_dir)
 
         # Start the app
-        eel.start('templates/index.html', jinja_templates='templates', size=(800, 600), block=False)
-        eel.btl.
-
+        eel.start('templates/index.html', jinja_templates='templates', size=(800, 600), block=False, 
+            jinja_global={
+                "show_times": SHOW_TIMES, 
+                "get_racers": lambda: db.get_users_sorted_by_top_time(SHOW_TIMES),
+                "get_current_racer": lambda: get_current_racer(),
+                "default_database": lambda: db.filename if db else "",
+            })
+    
         # logic
         while True:
             eel.sleep(1)
