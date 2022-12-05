@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            eel.setup_leaderboard("", 0, 30)().then(function() {
-                // redirect on load to leaderboard.html
-                window.location.replace("leaderboard.html");
-            });
-        });
-    </script>
-
+{% block content %
     <h1 class="page-title">Opsætning af leaderboard</h1>
     <input type="text" value="{{default_database()}}" id="database" onclick="eel.file_select()().then((r) => {this.value = r})" placeholder="Vælg eksisterende database" readonly>
     <input type="number" id="racers_amount" min="0" class="input-positive-integer" placeholder="Indtast antal racere">  

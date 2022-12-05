@@ -62,8 +62,6 @@ def load_database(filename: str = None) -> None:
 def setup_leaderboard(database_filename: str, racers: int, max_lap_time_s: int):
     load_database(database_filename)
 
-    db.create_fake_data()
-
     try:
         racers = int(racers) if racers else 0
         if max_lap_time_s:
@@ -81,8 +79,12 @@ if __name__ == "__main__":
     try:
         eel.init(web_dir)
 
+        setup_leaderboard("", 20, 0)
+
+        db.create_fake_data()
+
         # Start the app
-        eel.start('templates/index.html', jinja_templates='templates', size=(800, 600), block=False, 
+        eel.start('templates/leaderboard.html', jinja_templates='templates', size=(800, 600), block=False, 
             jinja_global={
                 "show_times": SHOW_TIMES, 
                 "get_racers": lambda: db.get_users_sorted_by_top_time(SHOW_TIMES),
