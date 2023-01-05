@@ -8,7 +8,7 @@ from tkinter import Tk, filedialog
 from database import Database, User     
 import race
 
-SHOW_TIMES = 3  
+SHOW_TIMES = 3
 
 # Set web files folder
 web_dir = os.path.join(os.path.dirname(__file__), 'web')
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     try:
         eel.init(web_dir)
 
-        setup_leaderboard("", 20, 0)
+        setup_leaderboard("", 0, 0)
 
         db.create_fake_data()
 
