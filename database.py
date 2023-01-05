@@ -94,7 +94,7 @@ class Database:
             raise ValueError("User does not exist")
 
         # select times from user sorted by time
-        self.c.execute("SELECT times.lap, times.time FROM times INNER JOIN times_many ON times.id = times_many.time_id WHERE times_many.user_id = ? ORDER BY times.time DESC LIMIT ?", (user_id, limit_times))
+        self.c.execute("SELECT times.lap, times.time FROM times INNER JOIN times_many ON times.id = times_many.time_id WHERE times_many.user_id = ? ORDER BY times.time ASC LIMIT ?", (user_id, limit_times))
 
         return User(user_id, name, self.c.fetchall())
 
@@ -102,7 +102,7 @@ class Database:
         self.c.execute("""SELECT users.id FROM users 
             LEFT JOIN times_many ON users.id = times_many.user_id 
             LEFT JOIN times ON times_many.time_id = times.id 
-            GROUP BY users.id ORDER BY MAX(times.time) DESC""")
+            GROUP BY users.id ORDER BY MIN(times.time) ASC NULLS LAST""")
         
         return [self.get_user(user_id, limit_times) for user_id, in self.c.fetchall()]
 

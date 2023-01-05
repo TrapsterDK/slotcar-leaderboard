@@ -1,4 +1,4 @@
-eel.expose(stop)
+eel.expose(stop);
 function stop() {
-    window.close()
+    window.close();
 }

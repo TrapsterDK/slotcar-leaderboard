@@ -1,9 +1,33 @@
-{% extends "base.html" %}
-
-{% block content %
-    <h1 class="page-title">Opsætning af leaderboard</h1>
-    <input type="text" value="{{default_database()}}" id="database" onclick="eel.file_select()().then((r) => {this.value = r})" placeholder="Vælg eksisterende database" readonly>
-    <input type="number" id="racers_amount" min="0" class="input-positive-integer" placeholder="Indtast antal racere">  
-    <input type="number" id="max_lap_time" min="0" class="input-positive-integer" placeholder="Maks lap tid før reset i sekunder">
-    <a href="leaderboard.html"><button id="start" onclick="eel.setup_leaderboard(database.value, racers_amount.value, max_lap_time.value)">Start</button></a>
+{% extends "base.html" %} {% block content %}
+<h1 class="page-title">Opsætning af leaderboard</h1>
+<input
+    type="text"
+    value="{{default_database()}}"
+    id="database"
+    onclick="eel.file_select()().then((r) => {this.value = r})"
+    placeholder="Vælg eksisterende database"
+    readonly
+/>
+<input
+    type="number"
+    id="racers_amount"
+    min="0"
+    class="input-positive-integer"
+    placeholder="Indtast antal racere"
+/>
+<input
+    type="number"
+    id="max_lap_time"
+    min="0"
+    class="input-positive-integer"
+    placeholder="Maks lap tid før reset i sekunder"
+/>
+<a href="leaderboard.html"
+    ><button
+        id="start"
+        onclick="eel.setup_leaderboard(database.value, racers_amount.value, max_lap_time.value)"
+    >
+        Start
+    </button></a
+>
 {% endblock %}

@@ -1,31 +1,30 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <h1 class="page-title">Leaderboard</h1>
-    <div id="leaderboard">
-        {% for racer in get_racers() %}
-            <div class="racer">
-                <h2 class="racer-position">{{loop.index}}</h2>
-                <div class="racer-container">
-                    <h3 class="racer-name">{{ racer.name }}</h3>
-                    <ol class="racer-times">
-                        {% for lap, time in racer.lap_times %}
-                            <li>
-                                <p>{{ lap }}</p>
-                                <p>{{ time }}</p>
-                            </li>
-                        {% endfor %}
-                        {% for i in range(racer.lap_times|length, show_times) %}
-                            <li>
-                                <p>Ingen tid</p>
-                            </li>
-                        {% endfor %}
-                    </ol>
-                </div>
-            </div>
-        {% endfor %}
+{% extends "base.html" %} {% block content %}
+<script src="../js/leaderboard.js"></script>
+<h1 class="page-title">Leaderboard</h1>
+<div id="leaderboard">
+    {% for racer in get_racers() %}
+    <div class="racer" id="{{racer.id}}">
+        <h2 class="racer-position">{{loop.index}}</h2>
+        <div class="racer-container">
+            <h3 class="racer-name">{{ racer.name }}</h3>
+            <ol class="racer-times">
+                {% for lap, time in racer.lap_times %}
+                <li>
+                    <p>{{ lap }}</p>
+                    <p>{{ "%.2f"|format(time / 1000) }}</p>
+                </li>
+                {% endfor %} {% for i in range(racer.lap_times|length,
+                show_times) %}
+                <li>
+                    <p>Ingen tid</p>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
     </div>
-    <div class="back-container">
-        <a href="index.html" class="go-back">Gå tilbage til setup</a>
-    </div>
+    {% endfor %}
+</div>
+<div class="back-container">
+    <a href="index.html" class="go-back">Gå tilbage til setup</a>
+</div>
 {% endblock %}

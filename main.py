@@ -1,12 +1,11 @@
 import datetime
 import os
 import eel
-from camera import VideoCamera
-import base64
 from tkinter import Tk, filedialog
 
-from database import Database, User     
-import race
+from database import Database, User
+from rspfake import RP_setup, RP_callback, RP_cleanup
+from race import *
 
 SHOW_TIMES = 3
 
@@ -27,18 +26,12 @@ def file_select(defaultextension=".db", filetypes=[("Database", "*.db")]):
         return file.name
     return ""
     
-
 def create_users(amount: int) -> None:
     if not amount:
         return
         
     count = db.get_user_count() + 1
     db.add_users([f"Team {count + i}" for i in range(last_user_id, last_user_id + amount)])
-
-@eel.expose
-def print_text(text):
-    print(text)
-
 
 def load_database(filename: str = None) -> None:
     global db
@@ -57,7 +50,6 @@ def load_database(filename: str = None) -> None:
     except Exception as e:
         raise e
 
-
 @eel.expose
 def setup_leaderboard(database_filename: str, racers: int, max_lap_time_s: int):
     load_database(database_filename)
@@ -65,14 +57,52 @@ def setup_leaderboard(database_filename: str, racers: int, max_lap_time_s: int):
     try:
         racers = int(racers) if racers else 0
         if max_lap_time_s:
-            race.MAX_LAP_TIME_MS = int(max_lap_time_s) * 1000
+            global MAX_LAP_TIME_MS
+            MAX_LAP_TIME_MS = int(max_lap_time_s) * 1000
     except ValueError:  
         raise ValueError("Invalid input")
 
     create_users(racers)
 
+@eel.expose
+def print_text(text):
+    print(text)
+
+race: Race = None
+
+@eel.expose 
+def set_current_racer(user_id: int):
+    global race
+    race = Race(db.get_user(user_id))
+
 def get_current_racer() -> User:
-    return db.get_user(last_user_id)
+    return race.user
+
+def start_race():
+    global race
+    if race:
+        race.start()
+        eel.resetcountup()
+    else:
+        return
+
+def round_elapsed():
+    global race
+    if race and race.started:
+        race.lap_elapsed()
+        lap_time = race.get_last_lap_time()
+        eel.AddLapTime(lap_time)
+        if race.is_done_laps():
+            eel.last_lap(lap_time)
+            db.add_times(race.user.id, [(i+1, race) for i, race in enumerate(race.get_times())])
+            race = None
+        else:
+            eel.resetcountup()
+
+@eel.expose
+def cancel_round():
+    global race
+    race = None
 
 
 if __name__ == "__main__":
@@ -91,10 +121,19 @@ if __name__ == "__main__":
                 "get_current_racer": lambda: get_current_racer(),
                 "default_database": lambda: db.filename if db else "",
             })
+
+        RP_callback(start_race, round_elapsed)
     
         # logic
         while True:
-            eel.sleep(1)
+            eel.sleep(6)
+            start_race()
+            eel.sleep(0.87)
+            round_elapsed()
+            eel.sleep(1.22)
+            round_elapsed()
+            eel.sleep(1.74)
+            round_elapsed()
 
     # eel.stop() was called, which calls sys.exit() done for proper cleanup
     except SystemExit: 
@@ -103,3 +142,5 @@ if __name__ == "__main__":
     # user closed the window    
     except KeyboardInterrupt:
         eel.stop()
+
+    
