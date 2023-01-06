@@ -1,3 +1,4 @@
+
 #sudo apt-get install rpi.gpio
 #pip install rpi.gpio
 import RPi.GPIO as GPIO
@@ -12,8 +13,8 @@ def RP_setup():
     GPIO.setup(pass_input, GPIO.IN)
 
 def RP_callback(start_input_callback, pass_input_callback):
-    GPIO.add_event_detect(start_input, GPIO.RISING, callback=start_input_callback, bouncetime=300)
-    GPIO.add_event_detect(pass_input, GPIO.RISING, callback=pass_input_callback, bouncetime=300)
+    GPIO.add_event_detect(start_input, GPIO.RISING, callback=lambda pin: start_input_callback() if GPIO.event_detected(pin) and GPIO.input(pin) == 1 else None, bouncetime=300)
+    GPIO.add_event_detect(pass_input, GPIO.RISING, callback=lambda pin: pass_input_callback() if GPIO.event_detected(pin) and GPIO.input(pin) == 1 else None, bouncetime=300)
 
 def RP_cleanup():
     GPIO.cleanup()

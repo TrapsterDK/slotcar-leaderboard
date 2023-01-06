@@ -1,10 +1,11 @@
+
 import datetime
 import os
 import eel
 from tkinter import Tk, filedialog
 
 from database import Database, User
-from rspfake import RP_setup, RP_callback, RP_cleanup
+from rsp import RP_setup, RP_callback, RP_cleanup
 from race import *
 
 SHOW_TIMES = 3
@@ -79,6 +80,7 @@ def get_current_racer() -> User:
     return race.user
 
 def start_race():
+    print("start")
     global race
     if race:
         race.start()
@@ -87,6 +89,7 @@ def start_race():
         return
 
 def round_elapsed():
+    print("elapse")
     global race
     if race and race.started:
         race.lap_elapsed()
@@ -107,6 +110,7 @@ def cancel_round():
 
 if __name__ == "__main__":
     try:
+        RP_setup()
         eel.init(web_dir)
 
         setup_leaderboard("", 0, 0)
@@ -126,14 +130,7 @@ if __name__ == "__main__":
     
         # logic
         while True:
-            eel.sleep(6)
-            start_race()
-            eel.sleep(0.87)
-            round_elapsed()
-            eel.sleep(1.22)
-            round_elapsed()
-            eel.sleep(1.74)
-            round_elapsed()
+            eel.sleep(1)
 
     # eel.stop() was called, which calls sys.exit() done for proper cleanup
     except SystemExit: 
@@ -143,4 +140,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         eel.stop()
 
-    
+RP_cleanup()
+

@@ -12,7 +12,7 @@ class Database:
         self.filename = name
         
         try:
-            self.con = sqlite3.connect(name)
+            self.con = sqlite3.connect(name, check_same_thread=False)
         except sqlite3.Error as e:
             raise e
         
