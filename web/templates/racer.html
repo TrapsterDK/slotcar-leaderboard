@@ -1,9 +1,29 @@
 {% extends "base.html" %} {% block content %}
 <script src="../js/racer.js"></script>
-<div class="racer-container">
-    <span id="timer">0.00</span>
+<div class="racer-containerluls">
     {% set racer = get_current_racer() %}
     <h3 class="racer-name">{{ racer.name }}</h3>
+    <span id="timer">0.00</span>
+
+    {% set best_user_lap = best_user_time() %} {% set best_lap = best_time() %}
+    <ol>
+        <li>
+            <p>Bedste tid</p>
+            {% if best_lap is not none %}
+            <p>{{ "%.2f"|format(best_lap / 1000) }}</p>
+            {% else %}
+            <p>Ingen tid</p>
+            {% endif %}
+        </li>
+        <li>
+            <p>Bedste tid af bruger</p>
+            {% if best_user_lap is not none %}
+            <p>{{ "%.2f"|format(best_user_lap / 1000) }}</p>
+            {% else %}
+            <p>Ingen tid</p>
+            {% endif %}
+        </li>
+    </ol>
     <ol class="racer-times">
         {% for lap in range(show_times) %}
         <li>
@@ -12,4 +32,6 @@
         {% endfor %}
     </ol>
 </div>
+<button id="racer-back" type="button">Stop</button>
+<button id="racer-restart" type="button">Restart</button>
 {% endblock %}

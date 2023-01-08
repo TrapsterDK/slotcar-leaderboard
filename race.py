@@ -5,7 +5,7 @@ def time_ms() -> float:
     return time.time_ns() // 1_000_000
 
 LAPS = 3
-MAX_LAP_TIME_MS = 30000
+MAX_LAP_TIME_MS = 60000
 
 class Race:
     times: list[float]

@@ -1,11 +1,11 @@
-
+import sys
 import datetime
 import os
 import eel
 from tkinter import Tk, filedialog
 
 from database import Database, User
-from rsp import RP_setup, RP_callback, RP_cleanup
+from rspfake import RP_setup, RP_callback, RP_cleanup
 from race import *
 
 SHOW_TIMES = 3
@@ -71,22 +71,46 @@ def print_text(text):
 
 race: Race = None
 
+@eel.expose
+def stop_race(page: str):
+    global race
+    race = None
+    eel.change_page(page)
+
+@eel.expose
+def reset_race(page: str):
+    global race
+    race = Race(race.user)
+    eel.change_page(page)
+
 @eel.expose 
-def set_current_racer(user_id: int):
+def set_current_racer(user_id: int, page: str):
     global race
     race = Race(db.get_user(user_id))
+    eel.change_page(page)
 
+@eel.expose
 def get_current_racer() -> User:
     return race.user
+
+current_page=None
+@eel.expose
+def page_loaded(page: str):
+    global current_page
+    current_page = page
+    
+
 
 def start_race():
     print("start")
     global race
-    if race:
-        race.start()
-        eel.resetcountup()
-    else:
-        return
+    print(race, race.started if race else None, current_page)
+    if race and race.started == False:
+        print(current_page)
+        if current_page == "http://localhost:8000/templates/racer.html":
+            race.start()
+            eel.resetcountup()
+
 
 def round_elapsed():
     print("elapse")
@@ -101,6 +125,14 @@ def round_elapsed():
             race = None
         else:
             eel.resetcountup()
+
+def best_user_time():
+    user_best_laps = db.get_user(race.user.id).lap_times 
+    return user_best_laps[0][1] if user_best_laps else None
+
+def best_time():
+    best_laps = db.get_users_sorted_by_top_time(1)[0].lap_times if db.get_user_count() else None 
+    return best_laps[0][1] if best_laps else None
 
 @eel.expose
 def cancel_round():
@@ -124,13 +156,17 @@ if __name__ == "__main__":
                 "get_racers": lambda: db.get_users_sorted_by_top_time(SHOW_TIMES),
                 "get_current_racer": lambda: get_current_racer(),
                 "default_database": lambda: db.filename if db else "",
+                "best_user_time": best_user_time,
+                "best_time": best_time,
             })
 
         RP_callback(start_race, round_elapsed)
     
         # logic
         while True:
-            eel.sleep(1)
+            eel.sleep(0.1)
+            if race and race.started and race.time_run_out():
+                eel.time_run_out()
 
     # eel.stop() was called, which calls sys.exit() done for proper cleanup
     except SystemExit: 
@@ -142,3 +178,4 @@ if __name__ == "__main__":
 
 RP_cleanup()
 
+sys.exit()
