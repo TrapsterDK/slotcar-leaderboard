@@ -3,8 +3,9 @@ var interval = null;
 var lap = 0;
 eel.expose(AddLapTime);
 function AddLapTime(ms) {
-    var element = document.getElementById("lap-" + lap);
-    element.innerHTML = `<p>${lap + 1}</p><p>${(ms / 1000).toFixed(2)}</p>`;
+    $("#lap-" + lap).replaceWith(
+        `<p>${lap + 1}</p><p>${(ms / 1000).toFixed(2)}</p>`
+    );
     lap += 1;
 }
 
@@ -25,17 +26,17 @@ eel.expose(last_lap);
 function last_lap(ms) {
     clearInterval(interval);
     document.getElementById("timer").innerHTML = (ms / 1000).toFixed(2);
+    document.getElementById("timer").innerHTML = "Ræset er færdigt";
     $("#racer-restart").attr("disabled", true);
     setTimeout(function () {
         eel.stop_race("leaderboard.html");
-    }, 3000);
+    }, 10000);
 }
 
 eel.expose(time_run_out);
 function time_run_out() {
     clearInterval(interval);
-    document.getElementById("timer").innerHTML =
-        "Tiden udløb, går til leaderboard om 3 sekunder";
+    document.getElementById("timer").innerHTML = "Tiden udløb";
     $("#racer-restart").attr("disabled", true);
     setTimeout(function () {
         eel.stop_race("leaderboard.html");

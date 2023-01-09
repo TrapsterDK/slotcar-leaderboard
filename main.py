@@ -102,9 +102,7 @@ def page_loaded(page: str):
 
 
 def start_race():
-    print("start")
     global race
-    print(race, race.started if race else None, current_page)
     if race and race.started == False:
         print(current_page)
         if current_page == "http://localhost:8000/templates/racer.html":
@@ -113,7 +111,6 @@ def start_race():
 
 
 def round_elapsed():
-    print("elapse")
     global race
     if race and race.started:
         race.lap_elapsed()
